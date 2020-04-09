@@ -1,0 +1,246 @@
+Mockito is a mocking framework for Java. Mockito allows convenient creation of substitutes of real objects for testing purposes. Enjoy clean tests with mock objects, improved TDD experience and beautiful mocking API.
+Mockito facilitates creating mock objects seamlessly. It uses Java Reflection in order to create mock objects for a given interface. Mock objects are nothing but proxy for actual implementations.
+
+Is it really a mocking framework?
+Technically speaking, Mockito is a Test Spy framework. Usually developers use Mockito instead of a mocking framework. Test Spy framework allows to verify behaviour (like mocks) and stub methods.
+
+The division of work between the two is that Mockito is kind of good for all the standard cases while PowerMock is needed for the harder cases. That includes for example mocking static and private methods.
+
+Benefits of Mockito
+No Handwriting − No need to write mock objects on your own.
+
+Refactoring Safe − Renaming interface method names or reordering parameters will not break the test code as Mocks are created at runtime.
+
+Return value support − Supports return values.
+
+Exception support − Supports exceptions.
+
+Order check support − Supports check on order of method calls.
+
+Annotation support − Supports creating mocks using annotation.
+
+
+Dependency:
+testImplementation 'org.mockito:mockito-core:2.7.22'
+
+Mockito provides several methods to create mock objects:
+    Using the static mock() method.
+    Using the @Mock annotation.
+    If you use the @Mock annotation, you must trigger the creation of annotated objects. The MockitoRule allows this. It invokes the static method MockitoAnnotations.initMocks(this) to populate the annotated fields. Alternatively you can use @RunWith(MockitoJUnitRunner.class)
+    @Mock
+    MyDatabase databaseMock; 
+    @Rule 
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+By adding the org.mockito.Mockito.*; static import, you can use methods like mock() directly in your tests.
+
+Mockito - Adding Behavior
+    when thenReturn, when thenThrow 
+    Iterator<String> i= mock(Iterator.class);
+            when(i.next()).thenReturn("Mockito").thenReturn("rocks");
+            String result= i.next()+" "+i.next();
+            //assert
+            assertEquals("Mockito rocks", result);
+
+            when(c.compareTo(anyInt())).thenReturn(-1); // this test demonstrates how to return values independent of the input value
+
+            when(c.compareTo(isA(Todo.class))).thenReturn(0); // return a value based on the type of the provide parameter
+
+            when(properties.get(”Anddroid”)).thenThrow(new IllegalArgumentException(...));
+
+
+    Use doReturn/when for stubbing; but there are cases where you can't use when/thenReturn. Stubbing void methods is one such. Others include use with Mockito spies, and stubbing the same method more than once.
+    One thing that when/thenReturn gives you, that doReturn/when doesn't, is type-checking of the value that you're returning, at compile time.
+
+    "doReturn when" and "doThrow when"
+        Properties properties = new Properties();
+        Properties spyProperties = spy(properties);
+        doReturn(“42”).when(spyProperties).get(”shoeSize”);
+        String value = spyProperties.get(”shoeSize”);
+        assertEquals(”42”, value);
+
+Wrapping Java objects with Spy
+    @Spy or the spy() method can be used to wrap a real object. Every call, unless specified otherwise, is delegated to the object.
+    Mockito provides option to create spy on real objects. When spy is called, then actual method of real object is called.
+ A Mockito spy is a partial mock. We can mock a part of the object by stubbing few methods, while real method invocations will be used for the other. it guarantees real methods are called against correctly constructed object because you're responsible for constructing the object passed to spy() method.
+
+Mockito - Verifying Behavior
+Mockito can ensure whether a mock method is being called with reequired arguments or not. It is done using the verify() method.
+    Check if method testing was called with the parameter 12
+        MyClass test = Mockito.mock(MyClass.class);
+        when(test.getUniqueId()).thenReturn(43);
+        // call method testing on the mock with parameter 12
+        test.testing(12);
+        test.getUniqueId();
+        test.getUniqueId();
+        verify(test).testing(ArgumentMatchers.eq(12));
+Mockito - Expecting and Varying Calls
+    For verifiying the number of method calls for a method
+        verify(test, never()).someMethod("never called");
+        verify(test, atLeastOnce()).someMethod("called at least once");
+        verify(test, atLeast(2)).someMethod("called at least twice");
+        verify(test, times(5)).someMethod("called five times");
+        verify(test, atMost(3)).someMethod("called at most 3 times");
+
+Mockito Ordered verification
+      //create an inOrder verifier for a single mock
+      InOrder inOrder = inOrder(calcService); // calcService is a mock object
+
+      //following will make sure that add is first called then subtract is called.
+      inOrder.verify(calcService).subtract(20.0,10.0);
+      inOrder.verify(calcService).add(20.0,10.0);
+
+    // This let's you check that no other methods where called on this object.
+    // You call it after you have verified the expected method calls.
+        verifyNoMoreInteractions(test);
+    In case you do not care about the value, use the anyX, e.g., anyInt, anyString(), or any(YourClass.class) methods.
+
+Using @InjectMocks for dependency injection via Mockito
+Mockito can inject mocks either via constructor injection, setter injection, or property injection and in this order. 
+
+Capturing the arguments
+The ArgumentCaptor class allows to access the arguments of method calls during the verification. This allows to capture these arguments of method calls and to use them for tests.
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
+
+    @Captor
+    private ArgumentCaptor<List<String>> captor;
+
+    @Test
+    public final void shouldContainCertainListItem() {
+        List<String> asList = Arrays.asList("someElement_test", "someElement");
+        final List<String> mockedList = mock(List.class);
+        mockedList.addAll(asList);
+
+        verify(mockedList).addAll(captor.capture());
+        final List<String> capturedArgument = captor.getValue();
+        assertThat(capturedArgument, hasItem("someElement"));
+    }
+
+Mockito - Callbacks
+Answer : Mockito provides a Answer interface which allows stubbing with generic interface.
+    // with doAnswer():
+    doAnswer(returnsFirstArg()).when(list).add(anyString());
+    // with thenAnswer():
+    when(list.add(anyString())).thenAnswer(returnsFirstArg());
+    // with then() alias:
+    when(list.add(anyString())).then(returnsFirstArg());
+
+    ApiService service = mock(ApiService.class);
+    when(service.login(any(Callback.class))).thenAnswer(i -> {
+        Callback callback = i.getArgument(0);
+        callback.notify("Success");
+        return null;
+    });
+
+//add the behavior to add numbers
+      when(calcService.add(20.0,10.0)).thenAnswer(new Answer<Double>() {
+
+         @Override
+         public Double answer(InvocationOnMock invocation) throws Throwable {
+            //get the arguments passed to mock
+            Object[] args = invocation.getArguments();
+			
+            //get the mock 
+            Object mock = invocation.getMock();	
+			
+            //return the result
+            return 30.0;
+         }
+      });
+
+Mocking final classes
+Since Mockito v2 it is possible to mock final classes. This feature is incubating and is deactivated by default. To activate the mocking of final classes create the file org.mockito.plugins.MockMaker in either src/test/resources/mockito-extensions/ or src/mockito-extensions/. Add this line to the file: mock-maker-inline. With this modification we now can mock a final class.
+
+final class FinalClass {
+    public final String finalMethod() { return "something"; }
+}
+
+@Test
+public final void mockFinalClassTest() {
+     FinalClass instance = new FinalClass();
+
+     FinalClass mock = mock(FinalClass.class);
+     when(mock.finalMethod()).thenReturn("that other thing");
+
+     assertNotEquals(mock.finalMethod(), instance.finalMethod());
+}
+
+Strict Stub Rule
+The strict stubs rule helps you to keep your test code clean and checks for common oversights. It adds the following:
+
+    test fails early when a stubbed method gets called with different arguments than what it was configured for (with PotentialStubbingProblem exception).
+    test fails when a stubbed method isn’t called (with UnnecessaryStubbingException exception).
+    org.mockito.Mockito.verifyNoMoreInteractions(Object) also verifies that all stubbed methods have been called during the test
+
+// activate the strict subs rule
+@Rule public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+Mockito 2.x specific limitations
+Requires Java 6+
+Cannot mock static methods
+Cannot mock constructors
+Cannot mock equals(), hashCode(). Firstly, you should not mock those methods. Secondly, Mockito defines and depends upon a specific implementation of these methods. Redefining them might break Mockito.
+
+
+Mockito with JUnit 4
+
+// @RunWith attaches a runner with the test class to initialize the test data
+@RunWith(MockitoJUnitRunner.class)
+public class MathApplicationTester {
+	
+   //@InjectMocks annotation is used to create and inject the mock object
+   @InjectMocks 
+   MathApplication mathApplication = new MathApplication();
+
+   //@Mock annotation is used to create the mock object to be injected
+   @Mock
+   CalculatorService calcService;
+
+public class TestRunner {
+   public static void main(String[] args) {
+      Result result = JUnitCore.runClasses(MathApplicationTester.class);
+      
+      for (Failure failure : result.getFailures()) {
+         System.out.println(failure.toString());
+      }
+      
+      System.out.println(result.wasSuccessful());
+   }
+}
+
+Mockito - Resetting Mock
+Here we've reset mock object. MathApplication makes use of calcService and after reset the mock, using mocked method will fail the test.
+    mathApplication = new MathApplication();
+    calcService = mock(CalculatorService.class);
+    mathApplication.setCalculatorService(calcService);
+    //add the behavior to add numbers
+      when(calcService.add(20.0,10.0)).thenReturn(30.0);
+  
+      //test the add functionality
+      Assert.assertEquals(mathApplication.add(20.0, 10.0),30.0,0);
+
+      //reset the mock	  
+      reset(calcService);
+
+      //test the add functionality after resetting the mock
+      Assert.assertEquals(mathApplication.add(20.0, 10.0),30.0,0);
+
+Mockito - Behavior Driven Development
+    given, when, then
+    Here we're using given method of BDDMockito class instead of when method
+    //given
+    given(calcService.add(20.0,10.0)).willReturn(30.0);
+
+    //when
+    double result = calcService.add(20.0,10.0);
+
+    //then
+    Assert.assertEquals(result,30.0,0);
+
+Mockito - Timeouts
+Mockito provides a special Timeout option to test if a method is called within stipulated time frame.
+      //invocation count can be added to ensure multiplication invocations
+      //can be checked within given timeframe
+      verify(calcService, timeout(100).times(1)).subtract(20.0,10.0);
+      /verify call to add method to be completed within 100 ms
+      verify(calcService, timeout(100)).add(20.0,10.0);

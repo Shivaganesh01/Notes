@@ -1,0 +1,374 @@
+<!-- HyperText Markup Language
+
+Link available on a webpage is called HyperText
+HTML is a Markup Language which means you use HTML to simply "mark-up" a text document with tags that tell a Web browser how to structure it to display.
+
+Used to write web pages
+
+tags:
+<!DOCTYPE ...> - This tag defines the document type and HTML version.
+<html> - This tag encloses the complete HTML document and mainly comprises of document header which is represented by <head>...</head> and document body which is represented by <body>...</body> tags.
+<h1> - heading
+<p>  - paragraph
+<title> - Used in header for page title
+<br /> - Line breaker tag - empty element as no content - void element - space between br and / is required for older browsers to understand - Just <br> is not valid in XHTML -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>HTML-Tutorial</title>
+    <meta name="keywords" content="HTML, Meta Tags, Metadata" />
+    <meta name="description" content="Learning about Meta Tags." />
+    <meta name="revised" content="Tutorialspoint, 3/7/2014" />
+    <!-- Page keep refreshing after every 15 seconds -->
+    <meta http-equiv="refresh" content="15" />
+    <!--You can use <meta> tag to redirect your page to any other webpage. You can also specify a duration if you want to redirect the page after a certain number of seconds.-->
+    <!-- <meta http-equiv="refresh" content="5; url = http://www.tutorialspoint.com" /> -->
+    <meta http-equiv="cookie" content="userid = xyz; expires = Monday, 06-Apr-20 17:21:59 GMT;" />
+    <meta name="author" content="Shivaganesh" />
+    <meta http-equiv="Content-Type" content="text/html; charset = UTF-8" />
+    <meta http-equiv="Content-Script-Type" content="text/JavaScript" />
+    <!-- Default scripting language info-->
+
+    <!-- The HTML <link> tag is used to specify relationships between the current document and external resource.
+    <link rel = "stylesheet" type = "text/css" href = "/css/style.css"> -->
+
+    <!-- The HTML <style> tag is used to specify style sheet for the current HTML document. -->
+    <style type="text/css">
+        body {
+            background-color: #ccc;
+            padding: 10px;
+        }
+        
+        .thick {
+            font-size: 20px;
+            font-weight: bolder;
+        }
+    </style>
+
+    <!-- The HTML <script> tag is used to include either external script file or to define internal script for the HTML document. -->
+    <script type="text/JavaScript">
+        function Hello() { alert("Hello, World"); }
+    </script>
+
+
+
+</head>
+
+<body>
+    <input type="button" onclick="Hello();" name="ok" value="OK" />
+    <p class="thick"> .thick class in header style</p>
+    <h1>This is heading 1</h1>
+    <h2>This is heading 2</h2>
+    <h3>This is heading 3</h3>
+    <h4>This is heading 4</h4>
+    <h5>This is heading 5</h5>
+    <h6>This is heading 6</h6>
+
+    <p>Here is a first paragraph of text.</p>
+    <p>Here is a second paragraph of text.</p>
+    <p>Here is a third paragraph of text.</p>
+
+    <p>Hello<br /> You delivered your assignment ontime.<br /> Thanks
+        <br /> Shivaganesh
+    </p>
+
+    <!-- Produces horizontal line -->
+    <hr />
+    <!-- Content at center -->
+    <center>
+        <p>This text is in the center.</p>
+    </center>
+
+    <!-- Any text between the opening <pre> tag and the closing </pre> tag will preserve the formatting of the source document. -->
+    <pre>
+    I am
+        excellent in writing 
+            HTML Pages
+    </pre>
+
+    <!-- Non breaking spaces -->
+    <!-- In cases, where you do not want the client browser to break text, you should use a nonbreaking space entity &nbsp; instead of a normal space. -->
+    <p>An example of this technique appears in the movie "12&nbsp;Angry&nbsp;Men."</p>
+
+    <!-- Text Formatting -->
+    <div style="color: darkviolet;">
+        <h1>Text Formatting, Phrase Tags</h1>
+        <p>This is <i>italic</i> paragraph</p>
+        <p>This is <b>bold</b> paragraph</p>
+        <p>This is <u>underlined</u> paragraph</p>
+        <p>This is <strike>striked</strike> paragraph</p>
+        <p><tt>Monospaced font style where each letter has the same width</tt></p>
+        <p><sup>Superscript</sup> Text example</p>
+        <p><sub>Subscript</sub> example H<sub>2</sub>O</p>
+        <!-- Anything that appears within <ins>...</ins> element is displayed as inserted text. -->
+        <p>I want to drink <del>cola</del> <ins>milk</ins></p>
+        <p>The following word uses a <big>big</big> typeface.</p>
+        <p>The following word uses a <small>small</small> typeface.</p>
+        <p>The following word uses an <em>emphasized</em> typeface.</p>
+        <p>The following word has been <mark>marked</mark> with yellow</p>
+        <p>The following word uses a <strong>strong</strong> typeface.</p>
+        <p>Text Abbrevation. My best friend's name is <abbr title="Abhishek">Abhy</abbr>.</p>
+        <p>Acronym example. This chapter covers marking up text in <acronym>XHTML</acronym>.</p>
+        <p>Bi directional Override <bdo dir="rtl">This text will go right to left.</bdo></p>
+        <p>Definition element First time introducing a special term. The following word is a <dfn>special</dfn> term.</p>
+        <blockquote>Block quote Example: XHTML 1.0 is the W3C's first Recommendation for XHTML,following on from earlier work on HTML 4.01, HTML 4.0, HTML 3.2 and HTML 2.0.</blockquote>
+
+        <p>Double Quote example: Rama to SHyama, <q>I think you are right.</q>.</p>
+        <p>Text citaion: This HTML tutorial is derived from <cite>W3 Standard for HTML</cite>.</p>
+        <p>Regular text. <code>This is code. Any programming code should be kept like this.</code> Regular text.</p>
+        <p>Keyboard text: Regular text. <kbd>This is inside kbd element</kbd> Regular text.</p>
+        <p><code>Content is variable: document.write("<var>user-name</var>")</code></p>
+        <p>Sample Output: Result produced by the program is <samp>Hello World!</samp></p>
+        <address>Address: 388A, Road No 22, Jubilee Hills -  Hyderabad</address>
+    </div>
+
+    <!-- Attributes -->
+    <p align="left">This is left aligned</p>
+    <p align="center">This is center aligned</p>
+    <p align="right">This is right aligned</p>
+
+    <!-- The four core attributes that can be used on the majority of HTML elements (although not all) are −
+
+            Id : To uniquely identify any element within an HTML page
+            Title: It is often displayed as a tooltip when cursor comes over the element or while the element is loading.
+            Class: The class attribute is used to associate an element with a style sheet, and specifies the class of element.
+            Style: Specify Cascading Style Sheet (CSS) rules within the element
+    -->
+    <p id="html">This para explains what is HTML</p>
+    <h3 title="Hello HTML!" class="class1 class2">Titled Heading Tag Example</h3>
+    <p style="font-family:arial; color:rgb(252, 115, 2);">Some text...</p>
+
+    <!-- There are three internationalization attributes, which are available for most (although not all) XHTML elements.
+
+        dir: The direction in which the text should flow ltr, rtl
+        lang
+        xml:lang -->
+    <p dir="rtl">This is how IE 5 renders right-to-left directed text.</p>
+
+    <!-- The <div> and <span> elements allow you to group together several elements to create sections or subsections of a page. group inline elements only. If you have a part of a sentence or paragraph which you want to group together, you could use the <span> element -->
+
+    <div id="menu" align="middle">
+        <a href="/index.htm">HOME</a> |
+        <a href="/about/contact_us.htm">CONTACT</a> |
+        <a href="/about/index.htm">ABOUT</a>
+    </div>
+
+    <div id="content" align="left" bgcolor="white">
+        <h5>Content Articles</h5>
+        <p>Actual content goes here.....</p>
+        <p>This is the example of <span style="color:green">span tag</span> and the <span style="color:red">div tag</span> alongwith CSS</p>
+    </div>
+
+    <!-- Inserting an Image -->
+    <img src="./Shivaganesh.jpg" alt="Shivaganesh" height="400" width="320" border="5" align="center" />
+
+    <!-- Table in HTML -->
+    <!-- The HTML tables are created using the <table> tag in which the <tr> tag is used to create table rows and <td> tag is used to create data cells. The elements under <td> are regular and left aligned by default -->
+
+    <table border="9" cellpadding="5" cellspacing="5" width="50%" height="200" style="background-color: dodgerblue;">
+        <caption>This is a sample html table</caption>
+        <tr>
+            <th>Column 1</th>
+            <th>Column 2</th>
+            <th>Column 3</th>
+        </tr>
+        <tr>
+            <td rowspan="2">Row 1 Cell 1</td>
+            <td>Row 1 Cell 2</td>
+            <td>Row 1 Cell 3</td>
+        </tr>
+        <tr>
+            <td>Row 2 Cell 2</td>
+            <td>Row 2 Cell 3</td>
+        </tr>
+        <tr>
+            <td colspan="3">Row 3 Cell 1</td>
+        </tr>
+    </table>
+
+    <h2>HTML Lists</h2>
+    <!-- 
+<ul> − An unordered list. This will list items using plain bullets.
+<ul type = "square">
+<ul type = "disc">
+<ul type = "circle">
+<ol> − An ordered list. This will use different schemes of numbers to list your items.
+<ol type = "1"> - Default-Case Numerals.
+<ol type = "I"> - Upper-Case Numerals.
+<ol type = "i"> - Lower-Case Numerals.
+<ol type = "A"> - Upper-Case Letters.
+<ol type = "a"> - Lower-Case Letters.
+
+<dl> − A definition list. This arranges your items in the same way as they are arranged in a dictionary.
+<dl> − Defines the start of the list
+<dt> − A term
+<dd> − Term definition
+</dl> − Defines the end of the list
+ -->
+
+    <ul>
+        <li>Beetroot</li>
+        <li>Ginger</li>
+        <li>Potato</li>
+        <li>Radish</li>
+    </ul>
+
+    <ol start="5">
+        <li>Beetroot</li>
+        <li>Ginger</li>
+        <li>Potato</li>
+        <li>Radish</li>
+    </ol>
+
+    <dl>
+        <dt><b>HTML</b></dt>
+        <dd>This stands for Hyper Text Markup Language</dd>
+        <dt><b>HTTP</b></dt>
+        <dd>This stands for Hyper Text Transfer Protocol</dd>
+    </dl>
+
+    <!-- a is anchor tag. target attribute can have various values
+_blank: Opens the linked document in a new window or tab.
+_self: Opens the linked document in the same frame.
+_parent: Opens the linked document in the parent frame.
+_top: Opens the linked document in the full body of the window.
+targetframe: Opens the linked document in a named targetframe. -->
+
+    <a href="http://google.co.in" target="_blank">Google</a>
+
+    <!-- base tag:
+When you link HTML documents related to the same website, it is not required to give a complete URL for every link. You can get rid of it if you use <base> tag in your HTML document header. -->
+
+    <!-- <head>
+        <title>Hyperlink Example</title>
+        <base href="https://www.tutorialspoint.com/">
+    </head> -->
+
+    <!-- Linking to page section can be done using <a href = "/html/html_text_links.htm#top">Go to the Top</a> where top should be id title or name attribute value-->
+
+    <!-- image as hyperlink. Use an image inside hyperlink at the place of text
+    <a href="https://www.tutorialspoint.com" target="_self">
+        <img src="/images/logo.png" alt="Tutorials Point" border="0" />
+    </a> -->
+
+    <!-- HTML frames are used to divide your browser window into multiple sections where each section can load a separate HTML document. A collection of frames in the browser window is known as a frameset.
+Disadvantages
+Some smaller devices cannot cope with frames often because their screen is not big enough to be divided up.
+Sometimes your page will be displayed differently on different computers due to different screen resolution.
+The browser's back button might not work as the user hopes.
+There are still few browsers that do not support frame technology.
+So deprecated in HTML5
+
+The <iframe> tag defines a rectangular region within the document in which the browser can display a separate document, including scrollbars and borders. An inline frame is used to embed another document within the current HTML document.
+<iframe src = "/html/menu.htm" width = "555" height = "200">
+     Sorry your browser does not support inline frames.
+</iframe> -->
+
+    <!-- All the HTML elements can be categorized into two categories (a) Block Level Elements (b)Inline Elements
+Block elements appear on the screen as if they have a line break before and after them. For example, the <p>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <ul>, <ol>, <dl>, <pre>, <hr />, <blockquote>, and <address> elements are all block level elements.
+
+Inline elements, on the other hand, can appear within sentences and do not have to appear on a new line of their own. The <b>, <i>, <u>, <em>, <strong>, <sup>, <sub>, <big>, <small>, <li>, <ins>, <del>, <code>, <cite>, <dfn>, <kbd>, and <var> elements are all inline elements.
+
+To group various other HTML tags (i) <div> tag and (ii) <span> tag -->
+
+    <!-- HTML Color Coding Methods
+There are following three different methods to set colors in your web page −
+Color names − You can specify color names directly like green, blue or red.
+Hex codes − A six-digit code representing the amount of red, green, and blue that makes up the color.
+Color decimal or percentage values − This value is specified using the rgb( ) property. -->
+
+
+    <!-- HTML Forms There are various form elements available like text fields, textarea fields, drop-down menus, radio buttons, checkboxes, etc. which will take input from the site visitor and then will post it to a back-end application. -->
+    <h4>Single Line Txt input Control</h4>
+    <form>
+        First name: <input type="text" size="10" maxlength="10" name="first_name" />
+        <br> Last name: <input type="text" name="last_name" />
+    </form>
+
+    <h4>Password Input</h4>
+    <form>
+        User ID : <input type="text" name="user_id" />
+        <br> Password: <input type="password" name="password" />
+    </form>
+
+    <h4>Multiline Text Input</h4>
+    <form>
+        Description : <br />
+        <textarea rows="5" cols="50" name="description">
+            Enter description here...
+         </textarea>
+    </form>
+
+    <h4>Checkbox</h4>
+    <form>
+        <input type="checkbox" name="maths" value="off"> Maths
+        <input type="checkbox" name="physics" value="on" checked> Physics
+    </form>
+
+    <h4>Radio button</h4>
+    <form>
+        <input type="radio" name="subject" value="maths"> Maths
+        <input type="radio" name="subject" value="physics"> Physics
+    </form>
+
+    <h4>Select box</h4>
+    <select name="dropdown">
+            <option value = "Maths" selected>Maths</option>
+            <option value = "Physics">Physics</option>
+         </select>
+
+    <h4>Fiel Upload</h4>
+    <form>
+        <input type="file" name="fileupload" accept="image/*" />
+    </form>
+
+    <h4>Button Controls</h4>
+    <!-- There are various ways in HTML to create clickable buttons. You can also create a clickable button using <input>tag by setting its type attribute to button. The type attribute can take the following values − submit, reset, button, image -->
+    <form>
+        <input type="submit" name="submit" value="Submit" />
+        <input type="reset" name="reset" value="Reset" />
+        <input type="button" name="ok" value="OK" />
+        <input type="image" name="imagebutton" src="/html/images/logo.png" />
+    </form>
+
+    <!-- Hidden Form Controls Hidden form controls are used to hide data inside the page which later on can be pushed to the server. -->
+    <h4>Hidden Form Controls</h4>
+    <form>
+        <p>This is page 10</p>
+        <input type="hidden" name="pagename" value="10" />
+    </form>
+
+    <h4>Embed Multimedia</h4>
+    <!-- Supported media, .swf, .mov, avi, .wmv, .mpeg etc -->
+    <embed src="/html/yourfile.swf" width="200" height="200">
+    <noembed><img src="yourimage.gif" alt="Alternative Media"></noembed>
+    </embed>
+
+    <!-- HTML 4 introduces the <object> element, which offers an all-purpose solution to generic object inclusion. The <object> element allows HTML authors to specify everything required by an object for its presentation by a user agent. -->
+
+    <!-- CSS can be used in tree ways in HTML document −
+
+External Style Sheet − Define style sheet rules in a separate .css file and then include that file in your HTML document using HTML <link> tag.
+Internal Style Sheet − Define style sheet rules in header section of the HTML document using <style> tag.
+Inline Style Sheet − Define style sheet rules directly along-with the HTML elements using style attribute. -->
+
+    <!-- If a browser doesn't support JavaScript, instead of running your script, it would display the code to the user. To prevent this, place HTML comments around the script.  -->
+    <script type="text/JavaScript">
+        <!--
+      document.write("Hello JavaScript!");
+   //-->
+    </script>
+    <!-- You can also provide alternative info to the users whose browsers don't support scripts and for those users who have disabled script option their browsers. You can do this using the <noscript> tag. -->
+    <noscript>Your browser does not support JavaScript!</noscript>
+
+
+
+
+
+
+
+</body>
+
+</html>

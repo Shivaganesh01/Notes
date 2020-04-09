@@ -1,0 +1,208 @@
+TestNG-(Test Next Generation) Tutorial (Udemy course: Selenium TestNG working with Java)
+
+A few of the features that TestNG has over JUnit 4 are:
+
+    Extra Before and After annotations such as Before/After Suite and Before/After Group
+    Dependency test
+    Grouping of test methods
+    Multithreaded execution
+    In-built reporting framework
+
+Annotations:
+    @BeforeSuite
+    @BeforeTest
+    @BeforeGroups
+    @BeforeClass
+    @BeforeMethod
+    @Test  -   If used at class level, all the public methods of a class will be considered as a test method.
+    @AfterMethod
+    @AfterClass
+    @AfterGroups
+    @AfterTest
+    @AfterSuite
+
+TestNG executes the parent class before annotated methods and then the child before annotated methods. After annotated methods, the child class method is executed and then the parent class.
+
+If you expect an exception:
+@Test( expectedExceptions = {IOException.class, NullPointerException.class}, expectedExceptionsMessageRegExp=".* Message .*" )
+
+To disable a Test ot public tests in a test class,
+@Test(enabled=false)
+
+.xml file to run a test suite.
+
+To run batches of test suites, create one more .xml and mention 
+<suite-files>
+    <suite-file path="" />
+</suite-files>
+
+To run tests in case of maven project provide below configuratpion for maven-surefire plugin
+    <configuration>
+        <!-- Suite testng xml file to consider for test execution -->
+        <suiteXmlFiles>
+            <suiteXmlFile>testng.xml</suiteXmlFile>
+            <suiteXmlFile>suites-test-testng.xml</suiteXmlFile>
+        </suiteXmlFiles>
+    </configuration>
+
+Skip a test
+    throw new SkipException("Not supported");
+Asserting
+    Assert.assertEquals();
+          .assertTrue();
+
+TestNG Prioritization and dependsOnMethods
+    @Test(priority=1)
+    @Test(priority=2)
+    If you give same priority to 2 methods, then testNG decides which one to run first.
+
+    @Test(dependsOnMethods={"test1", "test2"}) If test1 or test2 fails, this test will be skipped as there is a dependency.
+    @Test(priority=1,dependsOnMethods={"test1", "test2"}) If test1 or test2 fails, this test will be skipped as there is a dependency though priority is one, dependsOnMethods has higher priority.
+    dependsOnMethods helps in executing a set of tests to be executed before a test method. Method dependency only works if the “depend-on-method” is part of the same class or any of the inherited base class (i.e. while extending a class).
+There is also dependsOnGroups to overcome the problem with dependsOnMethods for usage of other class method dependency
+@Test(dependsOnGroups = { "test-group" })   @Test(groups = { "test-group" })
+
+TestNG Parameterization
+There are mainly two ways through which we can provide parameter values to testng tests.
+
+    Through testng.xml XML configuration file
+    Through DataProviders
+
+    In .xml <parameter name="email" value"abc@gmail.com">
+
+    @Parameters("email")
+    @Test
+    public void myTest(String email){
+}
+
+Optional value
+    @Parameters({ "value" })
+    @Test
+    public void optionTest(@Optional("optional value") String value)
+
+DataProviders: This can be used to run same test with different data sets. This method has to return an Object double array (Object[ ][ ]) as data. The first array represents a data set where as the second array contains the parameter values.
+
+    @DataProvider(name="data")
+    public Object[][] testData(){
+        Object[][] obj = new Object[2][2];
+        obj[0][0] = "fName1";
+        obj[0][1] = "lName1";
+
+        obj[1][0] = "fName2";
+        obj[1][1] = "lName2";
+
+        return obj;
+    }
+
+    @Test(dataProvider = "data")
+    public void registerUser(String fName, String lName){
+    }
+
+    If you want to write data set in a different file, then
+    @Test(dataProviderClass=TestDataFile.class,dataProvider="data") and that dataProvider method must be static.
+
+    If you need to use same dataProvider, but return data will be different, then
+
+    public static Object[][] testData(Method m){
+        Object[][] obj = null;
+        if(m.getName().equals("registerUser")){
+            obj = new Object[3][4];
+            ...
+        } 
+        if(m.getName().equals("LoginUser")){
+        obj = new Object[3][2];
+        ...
+        }
+        return obj;
+    }
+
+Grouping:
+    If you want to run some tests in one case, some tests in other case
+    @Test(groupings={"performance"})
+    @Test(groupings={"regression"})
+    @Test(groupings={"performance", "regression"})
+
+    in .xml file,
+        <groups>
+            <run>
+                <include name="performance" / >
+                <exclude name="regression" / > // runs only first test
+            </run>
+        <groups>
+
+If a test method belongs to both included and excluded group, the excluded group takes the priority and the test method will be excluded from the test execution.
+Assign a default group to a set of test methods that belong to a class. This way all the public methods that belong to the said class will automatically become TestNG test methods and become part of the said group.
+
+@Test(groups={"default-group"})
+public class DefaultGroup {}
+
+Group of groups<suite name="Group of group Suite" verbose="1">
+  <test name="Group of group Test">
+    <groups>
+      <define name="include-group">
+        <include name="include-test-one" />
+        <include name="include-test-two" />
+      </define>
+      <define name="exclude-group">
+        <include name="test-one-exclude" />
+        <include name="test-two-exclude" />
+      </define>
+      <run>
+        <include name="include-group" />
+        <exclude name="exclude-group" />
+      </run>
+    </groups>
+    <classes>
+      <class name="com.howtodoinjava.groupExamples.RegularExpressionGroupTest" />
+    </classes>
+  </test>
+</suite>
+
+Listeners: Helps in doing some action on test sucess, failure etc.
+
+ In .xml file, <listeners>
+                    <listener class-name="" />
+                </listeners>
+    Extend a class TestListenerAdapter and override onTestSuccess() etc. methods.
+
+Parallel Execution
+
+Advantages:
+    1. Reduces execution time
+    2. Allows multi-threaded code tests
+
+Run a test run in multi threaded mode: This feature is useful when you want to run only a fixed number of test methods in multi-threaded mode and not the whole test suite.
+    @Test( threadPoolSize=3, invocationCount=6, timeOut=1000)
+        threadPoolSize tell that test method to be run in three different threads. invocationCount and timeOut, configures the test to be invoked a multiple number of times and fail if the execution takes more time.
+
+Use Selenium Grid
+<suite name="MySuite" parallel="methods" thread-count=2>
+<suite name="MySuite" parallel="classes" thread-count=2>
+<suite name="MySuite" parallel="tests" thread-count=2>   ---- test blocks in suite
+In DataProvider(parallel=true) and in suite give parallel=none
+
+Use public static ThreadLocal<WebDriver> dr = new ThreadLocal<WebDriver>(); to avoid problem due to parallelism
+
+Timeout in test methods
+@Test(timeOut = 500)
+
+Timeout at suite level
+<suite name="Timeout suite" time-out="500" verbose="1">
+
+@Factory
+Factory in TestNG defines and creates tests dynamically at runtime.
+
+Main advantage of using the factory methods is that you can pass parameters to test classes while initializing them. These parameters can then be used across all the test methods present in the said classes.
+
+The execution is based on the Object array returned by the factory method.
+
+public class SimpleTestFactory 
+{
+    @Factory
+    public Object[] factoryMethod() {
+        return new Object[] { new SimpleTest(0), new SimpleTest(1) };
+    }
+}
+
+DataProvider: A test method that uses DataProvider will be executed a multiple number of times based on the data provided by the DataProvider. The test method will be executed using the same instance of the test class to which the test method belongs.
+Factory: A factory will execute all the test methods present inside a test class using a separate instance of the respective class.

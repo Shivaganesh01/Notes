@@ -1,0 +1,99 @@
+Spring Microservices:
+
+Feign:
+	Feign is a declarative client from Netflix. It is declarative because we as developers declare the api's for contacting other microservices. We define the rules in the form of our own interfaces. At runtime, Feign will create implementation for our interfaces automatically. 
+	Feign automatically uses Ribbon. Thus all calls are automatically load balanced. Feign also works well with Hystrix. 
+	With appropriate dependency and configuration, Feign will automatically use circuit breaker and fallback for all calls without the need for a separate service class.
+
+Dependency: spring-cloud-starter-feign
+@EnableFeignClients
+
+@FeignClient("PlanMS")    # FeignClient for Plan MicroService
+public interface CustPlanFeign {
+	@RequestMapping(value="/plans/{planId}")
+	PlanDTO getSpecificPlan(@PathVariable("planId") int planId);	
+}
+We need not provide an implementation for this interface. The framework will provide a dynamic implementation at run time.
+Autowire the feign client and use planFeign.getSpecificPlan(planId);
+
+Sleuth:
+	Spring Cloud Sleuth is one of the projects under Spring Cloud which allows us to trace a request. Sleuth adds two things: a traceId and a spanId in our logs. TraceId is a unique ID generated for every request. Span ID is a unique ID generated for span or path of a single microservice. So if a request flows through two microservices, it will have one TraceId and two SpanId's. One span is created for the network hop and the other is for the application execution.
+	The First Parameter is the Service name, the second is the traceId, third is the span Id. The fourth parameter is false as we have not yet linked it with Zipkin.
+Dependency: spring-cloud-starter-sleuth
+
+Zipkin:
+	Sleuth generates the traceId and spanId. But it is difficult to make use of that data in its raw form. This is where Zipkin is used. 
+	Zipkin is a distributed tracing system which allows us to gather information on the trace of a request. By adding appropriate dependency, we make sleuth send all its details to a Zipkin server. The Zipkin server has an in memory DB where the details are stored. Zipkin has a powerful UI application, which allows to analyse the logs and take appropriate action.
+Dependency: zipkin-autoconfigure-ui, zipkin-server
+@EnableZipkinServer
+All microservices should have spring-cloud-sleuth-zipkin
+Provides UI to see the trace of a call
+
+
+Many challenges of microservices can be solved by using appropriate design patterns. We have already seen some of them in the course. The challenges can be addressed by the patterns such as:
+
+As the number of microservices increases, managing them and scaling them becomes difficult
+	Load Balancing pattern (Ribbon), Messaging Patterns
+
+Failure points are more
+	Circuit Breaker Pattern, Fallback pattern (Hystrix)
+
+Since the number of microservices are high, keeping track of what is happening where becomes difficult
+	Service Discovery(Eureka Dashboard), Circuit Breaker ( Hystrix, Turbine ), Distributed Tracing Pattern (Zipkin)
+
+We need to monitor the different services and find out which are up, which are down, which need scaling, etc
+	Service Discovery(Eureka Dashboard), Circuit Breaker ( Hystrix, Turbine ), Distributed Tracing Pattern (Zipkin)
+
+Log data will be immense and we need to find out meaningful information from them
+	Distributed Tracing ( Sleuth, ELK Stack )
+
+A single faulty service can bring down all the other services
+	Circuit Breaker ( Hystrix )
+
+Coordinating with external services is a challenge
+	API Gateway, Backend For Frontend
+
+Managing databases becomes increasingly difficult
+	Single DB, DB Per Service, API composition, Saga, CQRS
+
+Since each service may use different technology stack, deploying them also becomes a challenge
+	Multiple service instances per host, Service instance per host , Service instance per Container
+
+
+Some of the Database patterns are:
+
+Single DB - There is only one DB which is  shared by all the microservices
+
+DB Per Service - Each microservice has its own DB. This throws challenges on what if there is data related across databases. To address this we have other patterns like:
+
+API composition - This is the pattern we saw in the beginning of the course, where the microservice was aggregating the result from  other microservices by adding additional REST endpoints in those microservices instead of performing a table join.
+
+Saga - In this pattern a sequence of individual or local Database operations are carried out through event driven database management model. For example, if we delete a customer, the related friend and family should also be deleted. These two operations can be considered a saga. In this model, when a customer is deleted, an delete event is raised on the friend service. The friend service listens to such events and once it receives the delete event, it performs a local delete transaction on the friend table
+
+CQRS - This is called the Command Query Responsibility Segregation. In this pattern, we maintain two copies or views of the database. One view is based on the common queries that get executed on the database. Thus this view can be a join of different tables. The other model of the same database is based on the update operations that get executed on the database. Thus the database is segregated based on the common commands and queries.
+
+
+The microservices can also be packaged in the below ways:
+
+container-less : The executable is a JAR or WAR but the dependent frameworks are separate. For example, it does not include Tomcat, Jboss, etc
+
+self-contained: This contains the executable as well as the frameworks.
+
+in-container: The executable, frameworks and the entire JVM is packaged in one go, using a container technology like Docker, Kubernetes, etc
+
+The best way is to go for in-container as this ensures that the development, testing, deployment environments are same for every one and it is best from Devops perspective.
+
+
+
+
+Testing a microservice involves:   Spring Cloud Contract Project helps to do hese tests.
+
+Testing individual classes/functionalities inside a microservice - Unit Test
+
+Testing whether it is able to receive message in the right format - Contract test
+
+Testing whether it is able to respond back with right format - Contract test
+
+Testing whether it is able to communicate with other microservices and pass messages to them - Integration test
+
+Testing whether it is able to aggregate the results from other microservices - Component test

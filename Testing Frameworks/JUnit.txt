@@ -1,0 +1,193 @@
+
+
+Testing Terminologies:
+
+A test fixture is a fixed state of a set of objects which are used as a baseline for running tests. Another way to describe this is a test precondition.
+A unit test is a piece of code written by a developer that executes a specific functionality in the code to be tested and asserts a certain behavior or state.
+The percentage of code which is tested by unit tests is typically called test coverage.
+An integration test aims to test the behavior of a component or the integration between a set of components. The term functional test is sometimes used as synonym for integration test. Integration tests check that the whole system works as intended.
+Performance tests are used to benchmark software components repeatedly. Their purpose is to ensure that the code under test runs fast enough even if it’s under high load.
+
+JUnit assumes that all test methods can be executed in an arbitrary order. Well-written test code should not assume any order, i.e., tests should not depend on other tests.
+An annotation to define that the test methods are sorted by method name, in lexicographic order. To activate this feature, annotate your test class with the @FixMethodOrder(MethodSorters.NAME_ASCENDING) annotation.
+
+Annotations
+
+import org.junit.*
+
+Import statement for using the following annotations.
+
+@Test
+
+Identifies a method as a test method.
+
+@Before
+
+Executed before each test. It is used to prepare the test environment (e.g., read input data, initialize the class).
+
+@After
+
+Executed after each test. It is used to cleanup the test environment (e.g., delete temporary data, restore defaults). It can also save memory by cleaning up expensive memory structures.
+
+@BeforeClass
+
+Executed once, before the start of all tests. It is used to perform time intensive activities, for example, to connect to a database. Methods marked with this annotation need to be defined as static to work with JUnit.
+
+@AfterClass
+
+Executed once, after all tests have been finished. It is used to perform clean-up activities, for example, to disconnect from a database. Methods annotated with this annotation need to be defined as static to work with JUnit.
+
+@Ignore or @Ignore("Why disabled")
+
+Marks that the test should be disabled. This is useful when the underlying code has been changed and the test case has not yet been adapted. Or if the execution time of this test is too long to be included. It is best practice to provide the optional description, why the test is disabled.
+
+@Test (expected = Exception.class)
+
+Fails if the method does not throw the named exception.
+
+@Test(timeout=100)
+
+Fails if the method takes longer than 100 milliseconds.
+
+
+JUnit test suites
+If you have several test classes, you can combine them into a test suite. Running a test suite executes all test classes in that suite in the specified order. A test suite can also contain other test suites.
+@RunWith(Suite.class)
+@SuiteClasses({
+        MyClassTest.class,
+        MySecondClassTest.class })
+
+public class AllTests {}
+
+
+The @Ignore annotation allow to statically ignore a test. Alternatively you can use Assume.assumeFalse or Assume.assumeTrue to define a condition for the test. Assume.assumeFalse marks the test as invalid, if its condition evaluates to true.
+
+Parameterized Tests:
+JUnit allows you to use parameters in a tests class. This class can contain one test method and this method is executed with the different parameters provided.
+@RunWith(Parameterized.class)
+public class ParameterizedTestFields {
+
+    // fields used together with @Parameter must be public
+    @Parameter(0)
+    public int m1;
+    @Parameter(1)
+    public int m2;
+    @Parameter(2)
+    public int result;
+
+
+    // creates the test data
+    @Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] { { 1 , 2, 2 }, { 5, 3, 15 }, { 121, 4, 484 } };
+        return Arrays.asList(data);
+    }
+
+
+    @Test
+    public void testMultiplyException() {
+        MyClass tester = new MyClass();
+        assertEquals("Result", result, tester.multiply(m1, m2));
+    }
+    // class to be tested
+    class MyClass {
+        public int multiply(int i, int j) {
+            return i *j;
+        }
+    }
+}
+
+or
+
+@RunWith(Parameterized.class)
+public class ParameterizedTestUsingConstructor {
+
+    private int m1;
+    private int m2;
+
+    public ParameterizedTestUsingConstructor(int p1, int p2) {
+        m1 = p1;
+        m2 = p2;
+    }
+
+    @Test
+    public void testMultiplyException() {
+        MyClass tester = new MyClass();
+        assertEquals("Result", m1 * m2, tester.multiply(m1, m2));
+    }
+    ...
+}
+
+JUnit Rules
+@Rule
+  public ExpectedException exception = ExpectedException.none();
+
+  @Test
+  public void throwsIllegalArgumentExceptionIfIconIsNull() {
+    exception.expect(IllegalArgumentException.class);
+    exception.expectMessage("Negative value not allowed");
+
+@Rule
+  public TemporaryFolder folder = new TemporaryFolder();
+
+  @Test
+  public void testUsingTempFolder() throws IOException {
+    File createdFolder = folder.newFolder("newfolder");
+    File createdFile = folder.newFile("myfilefile.txt");
+
+Writing custom JUnit rules
+To write your custom rule, you need to implement the TestRule interface. This interface defines the apply(Statement, Description) method which must return an instance of Statement.
+
+Categories
+It is possible to define categories of tests and include or exclude them based on annotations.
+public interface FastTests { /* category marker */
+}
+
+public interface SlowTests { /* category marker */
+}
+
+public class A {
+    @Test
+    public void a() {
+        fail();
+    }
+
+    @Category(SlowTests.class)
+    @Test
+    public void b() {
+    }
+}
+
+@Category({ SlowTests.class, FastTests.class })
+public class B {
+    @Test
+    public void c() {
+    }
+}
+
+@RunWith(Categories.class)
+@IncludeCategory(SlowTests.class)
+@SuiteClasses({ A.class, B.class })
+// Note that Categories is a kind of Suite
+public class SlowTestSuite {
+    // Will run A.b and B.c, but not A.a
+}
+
+@RunWith(Categories.class)
+@IncludeCategory(SlowTests.class)
+@ExcludeCategory(FastTests.class)
+@SuiteClasses({ A.class, B.class })
+// Note that Categories is a kind of Suite
+public class SlowTestSuite {
+    // Will run A.b, but not A.a or B.c
+}
+
+The @Test (expected = Exception.class) annotation is limited as it can only test for one exception. To testexceptions, you can use the following testpattern.
+
+try {
+   mustThrowException();
+   fail();
+} catch (Exception e) {
+   // expected
+   // could also check for message of exception, etc.
+}

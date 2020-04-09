@@ -1,0 +1,123 @@
+Angular 7
+
+A single page application(SPA) is a web application or a website which provides users a very fluid, reactive and fast experience similar to a desktop application. It contains menu, buttons and blocks on a single page and when a user clicks on any of them; it dynamically rewrites the current page rather than loading entire new pages from a server
+
+Features added in Angular 7
+Virtual Scrolling: This shows up the visible dom elements to the user, as the user scrolls, the next list is displayed. This gives faster experience as the full list is not loaded at one go and only loaded as per the visibility on the screen.
+
+Drag and Drop: You can drag and drop elements from a list and place it wherever required within the list. The new feature is very smooth and fast.
+
+Installation:
+
+npm install –g @angular/cli
+
+ng version - To see angular cli version
+
+ng new MyFirstApp - To create an angular application
+
+cd MyFirstApp
+ng serve --open --host 0.0.0.0 --port 4444  - To serve app at port 4444 0.0.0.0 allows to access app in the network
+
+Options for Style Sheet:  CSS, SCSS, Sass, Less and Stylus
+
+File Structure
+
+app.module.ts
+
+@NgModule({
+   declarations: [
+      AppComponent
+   ],
+   imports: [
+      BrowserModule,
+      AppRoutingModule
+   ],
+   providers: [],
+   bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+Declarations − In declarations, the reference to the components is stored. The App component is the default component that is created whenever a new project is initiated.
+
+Imports − This will have the modules imported. At present, BrowserModule is part of the imports which is imported from @angular/platform-browser. There is also routing module added AppRoutingModule.
+
+Providers − This will have reference to the services created.
+
+Bootstrap − This has reference to the default component created, i.e., AppComponent.
+
+index.html will be loaded to the browser which calls main.ts internally.
+main.ts is the file from where we start our project development.
+polyfill.ts: This is mainly used for backward compatibility.
+
+Module in Angular refers to a place where you can group the components, directives, pipes, and services, which are related to the application
+curly braces for data binding - {{}}; this process is called interpolation.
+
+Component Directives
+These form the main class having details of how the component should be processed, instantiated and used at runtime.
+
+Structural Directives
+A structure directive basically deals with manipulating the dom elements. Structural directives have a * sign before the directive. For example, *ngIf and *ngFor.
+
+Attribute Directives
+Attribute directives deal with changing the look and behavior of the dom element.
+
+{{ Welcome to Angular 7 | lowercase}} - Usage of Pipes
+Lowercasepipe
+Uppercasepipe
+Datepipe
+Currencypipe
+Jsonpipe
+Percentpipe
+Decimalpipe
+Slicepipe
+
+With services, we can access methods and properties across other components in the entire project.
+
+To update your application and its dependencies, you can use the following command −
+        ng update @angular/cli @angular/core
+
+2 types of Forms
+    Template Driven needs FormsModule. Does most of the things in template(html) uses ngForm
+    Model Driven needs ReactiveFormModule. Does most of the things in component. uses formGroup, formControl
+
+
+Test
+
+ng test
+jasmine to write our test cases.
+35
+
+Jasmine is a behavior-driven development framework for testing JavaScript code. It does not depend on any other JavaScript frameworks. It does not require a DOM. And it has a clean, obvious syntax so that you can easily write tests.
+
+Karma is essentially a tool for testing which spawns a web server that executes source code against test code for each of the browsers connected. The results of each test against each browser are examined and displayed via the command line to the developer such that they can see which browsers and tests passed or failed.
+
+Jasmine and Karma are usually used together to perform Unit testing or integration testing.
+
+Protractor is an end-to-end test framework for Angular and AngularJS applications. Protractor runs tests against your application running in a real browser, interacting with it as a user would without depending on other tools for performing the same.
+
+
+
+Build
+
+The configuration for build, i.e., production, staging, development, testing needs to be defined in your src/environments.
+
+For production: (environment.prod.ts)
+export const environment = {
+   production: true
+};
+
+In angular.json, provide configurations
+
+"configurations": {
+   "production": { ... },
+   "staging": {
+      "fileReplacements": [
+         {
+            "replace": "src/environments/environment.ts",
+            "with": "src/environments/environment.staging.ts"
+         }
+      ]
+   }
+}
+
+ng build --configuration = staging // for staging enviroment

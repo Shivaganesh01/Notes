@@ -1,0 +1,512 @@
+JUnit5 Components:
+    JUnit Platform : Launches testing framwork, has testEngine API
+    JUnit Jupiter : Blend of new programming model for writing tests and extension model for extension, new annotations @BeforeEach, @AfterAll etc.
+    JUnit Vintage : Support for JUnit 3, 4
+
+Since all classes and annotations specific to JUnit Jupiter reside under a new org.junit.jupiter base package, having both JUnit 4 and JUnit Jupiter in the classpath does not lead to any conflicts. It is therefore safe to maintain existing JUnit 4 tests alongside JUnit Jupiter tests.
+
+@RepeatedTest(<Number>) - Repeats the test a <Number> of times
+
+New annotations compared to JUnit 4
+    @TestFactory – denotes a method that is a test factory for dynamic tests
+    @DisplayName – defines custom display name for a test class or a test method @DisplayName("Single test successful") 
+    @Nested – denotes that the annotated class is a nested, non-static test class
+    @Tag – declares tags for filtering tests
+    @ExtendWith – it is used to register custom extensions
+    @BeforeEach – denotes that the annotated method will be executed before each test method (previously @Before)
+    @AfterEach – denotes that the annotated method will be executed after each test method (previously @After)
+    @BeforeAll – denotes that the annotated method will be executed before all test methods in the current class (previously @BeforeClass)
+    @AfterAll – denotes that the annotated method will be executed after all test methods in the current class (previously @AfterClass)
+    @Disabled – it is used to disable a test class or method (previously @Ignore) @Disabled("Not implemented yet")
+
+Note: Method with @BeforeAll annotation needs to be static, otherwise the code will not compile.
+
+JUnit5 maven surefire provider to execute the unit tests where IDE does not have JUnit5 support
+The test methods need not be a public and local package.
+org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test;
+
+assertEquals(expected, actual)	Fails when expected does not equal actual
+assertFalse(expression)	Fails when expression is not false
+assertNull(actual)	Fails when actual is not null
+assertNotNull(actual)	Fails when actual is null
+assertAll()	Group many assertions and every assertion is executed even if one or more of them fails
+assertTrue(expression)	Fails if expression is not true
+assertThrows()	Class to be tested is expected to throw an exception
+assertSame() 2 Objects refers to the same object
+assertArrayEquals() 2 Arrays are equal or not
+    Two arrays are considered as equal if:
+        They are both null or empty.
+        Both arrays contain the “same” objects or values. To be more specific, JUnit 5 iterates both arrays one element at a time and ensures that the elements found from the given index are equal.
+assertIterableEquals(FIRST, SECOND);
+
+assertEquals(20, 20, "optional assertion message");
+assertTrue(10  {
+	      throw new IllegalArgumentException("Illegal Argument Exception occured");
+assertAll("numbers",
+	      () -> assertEquals(str1,"abc"),
+		  () -> assertEquals(str2,"pqr"),
+		  () -> assertEquals(str3,"xyz")
+	 );
+Group assertions with assertAll() which will report any failed assertions within the group with a MultipleFailuresError
+
+assertTrue(Stream.of(1, 2, 3)
+      .stream()
+      .mapToInt(i -> i)
+      .sum() > 5, () -> "Sum should be greater than 5");
+Advantage of using the lambda expression for the assertion message is that it is lazily evaluated, which can save time and resources if the message construction is expensive.
+
+Assumptions will execute a test only when the specified condition met otherwise test will be aborted. The aborted test will not cause build failure. When an assumption fails, org.opentest4j.TestAbortedException is thrown and the test is skipped.
+This is typically used for external conditions that are required for the test to run properly, but which are not directly related to whatever is being tested.
+@Test
+void assumptionThat() {
+    String someString = "Just a string";
+assumingThat(
+        someString.equals("Just a string"),
+        () -> assertEquals(2 + 2, 4)
+    );
+}
+assumeTrue( 5 > 1+2)
+
+Nested Test classes: Nested tests allow to create nested classes and execute all of its test methods. The inner classes must be non-static.
+
+@AfterAll
+static void afterAll() {
+	 System.out.println("**--- JUnit5Sample4Test :: afterAll :: Executed after all test method ---**");
+}
+ 
+     @Nested
+     class InnerClass {
+ 
+          @AfterEach
+          void afterEach() {
+        	   System.out.println("**--- InnerClass :: afterEach :: Executed after each test method ---**");
+          }
+ 
+          @Test
+          void testMethod1() {
+        	   System.out.println("**--- InnerClass :: testMethod1 :: Executed test method1 ---**");
+          }
+ 
+          @Nested
+          class InnerMostClass {
+ 
+               @BeforeEach
+               void beforeEach() {
+                    System.out.println("**--- InnerMostClass :: beforeEach :: Executed before each test method ---**");
+               }
+ 
+               @Test
+               void testMethod2() {
+            	    System.out.println("**--- InnerMostClass :: testMethod2 :: Executed test method2 ---**");
+               }
+        }
+    }
+
+JUnit Test Exception:
+
+Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+     throw new IllegalArgumentException("Illegal Argument Exception occured");
+});
+assertEquals("Illegal Argument Exception occured", exception.getMessage());
+
+
+Test Suites:
+Aggregating multiple test classes in a test suite so that we can run those together.
+JUnit 5 provides two annotations: @SelectPackages and @SelectClasses to create test suites.
+
+@RunWith(JUnitPlatform.class)
+@SelectPackages("com.baeldung")
+public class AllUnitTest {}
+
+@RunWith(JUnitPlatform.class)
+@SelectClasses({AssertionTest.class, AssumptionTest.class, ExceptionTest.class})
+public class AllUnitTest {}
+
+
+Dynamic Tests allow us to define the testcases dynamically in the runtime.
+Dynamic tests can be generated by a factory method annotated with @TestFactory.
+@TestFactory
+public Stream<DynamicTest> translateDynamicTestsFromStream() {
+    return in.stream()
+      .map(word ->
+          DynamicTest.dynamicTest("Test translate " + word, () -> {
+            int id = in.indexOf(word);
+            assertEquals(out.get(id), translate(word));
+          })
+    );
+}
+The factory method must return a Stream, Collection, Iterable, or Iterator.
+@TestFactory methods must not be private or static. The number of tests is dynamic, and it depends on the ArrayList size.
+Dynamic tests are quite different from standard @Test cases since callbacks such as @BeforeEach and @AfterEach methods are not executed for dynamic tests.
+
+
+
+
+Usage of JUnit 5 with Gradle
+To use JUnit with the Gradle build system, ensure you use at least Gradle 6.0 to avoid already fixed issues.
+
+https://www.petrikainulainen.net/programming/testing/
+
+Gradle:
+Enabling Gradle's Native JUnit 5 Support
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+}
+test {
+    useJUnitPlatform()
+}
+gradle clean test
+gradle junitPlatformTest
+
+
+Maven:
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.1</version>
+        </plugin>
+    </plugins>
+</build>
+
+mvn clean test
+
+With default configuration of the Maven Surefire Plugin, it runs all test methods found from a test class if the name of the test class:
+Starts or ends with the string: Test, Ends with the string: Tests, Ends with the string: TestCase.
+
+
+Testing:
+A test class is a normal Java class that is either public or package private.
+All setup and teardown methods(@BeforeAll, @BeforeEach, @AfterEach, @AfterAll) are inherited as long as they are not overridden. Also, the setup and teardown methods found from the superclasses are invoked before the setup and teardown methods which are found from the subclasses. These methods must not return anything. In other words, their return type must be void. Setup and teardown methods cannot be private.
+A test method isn’t private or static
+A test method must not return anything. In other words, its return type must be void.
+A test method must be annotated with the @Test annotation.
+
+Nested Tests:
+All nested test classes must be non-static inner classes.
+We have annotate our nested test classes with the @Nested annotation. This annotation ensures that JUnit 5 recognizes our nested test classes.
+There is no limit for the depth of the class hierarchy.
+By default, a nested test class can contain test methods, one @BeforeEach method, and one @AfterEach method.
+Because Java doesn’t allow static members in inner classes, the @BeforeAll and @AfterAll methods don’t work by default. However, this restriction can be circumvented by annotating a @Nested test class with @TestInstance(Lifecycle.PER_CLASS)
+An inner class that can contain all the tests of a feature or a method.
+
+JUnit 5 Parameterized Tests
+'org.junit.jupiter:junit-jupiter-params:5.1.0'
+
+@DisplayName("Should pass a non-null message to our test method")
+    @ParameterizedTest(name = "{index} => message=''{0}''")
+    @ValueSource(strings = {"Hello", "World"}) // ValueSource supports only one method parameter
+    void shouldPassNonNullMessageAsMethodParameter(String message) {
+        assertNotNull(message);
+    }
+
+Passing Enum Values to Our Parameterized Test
+enum Pet {
+    CAT,
+    DOG;
+}
+@DisplayName("Should pass non-null enum values as method parameters")
+    @ParameterizedTest(name = "{index} => pet=''{0}''")
+    @EnumSource(Pet.class)
+    void shouldPassNonNullEnumValuesAsMethodParameter(Pet pet) {
+        assertNotNull(pet);
+    }
+
+@DisplayName("Should pass only the specified enum value as a method parameter")
+    @ParameterizedTest(name = "{index} => pet=''{0}''")
+    @EnumSource(value = Pet.class, names = {"CAT"})
+    void shouldPassNonNullEnumValueAsMethodParameter(Pet pet) {
+        assertNotNull(pet);
+    }
+
+CSV Format:
+ When we specify our test data, we have to follow these rules:
+
+One String object must contain all method parameters of one method invocation.
+The different method parameters must be separated with a comma.
+The values found from each line must use the same order as the method parameters of our test method.
+
+@DisplayName("Should calculate the correct sum")
+    @ParameterizedTest(name = "{index} => a={0}, b={1}, sum={2}")
+    @CsvSource({
+            "1, 1, 2",
+            "2, 3, 5"
+    })
+    void sum(int a, int b, int sum) {
+        assertEquals(sum, a + b);
+    }
+
+When we add our test data to the created CSV file, we have to follow these rules:
+
+One line must contain all method parameters of one method invocation.
+The different method parameters must be separated with a comma.
+The values found from each line must use the same order as the method parameters of our test method.
+
+
+@DisplayName("Should calculate the correct sum")
+    @ParameterizedTest(name = "{index} => a={0}, b={1}, sum={2}")
+    @CsvFileSource(resources = "/test-data.csv")
+    void sum(int a, int b, int sum) {
+        assertEquals(sum, a + b);
+    }
+
+We can now pass multiple method parameters to our parameterized test. However, the catch is that the method parameters of our parameterized tests must be supported by the DefaultArgumentConverter class.
+
+To solve this:
+Creating the Method Parameters by Using a Factory Method
+
+The factory method must not take any method parameters.
+The factory method must return a Stream, Iterable, Iterator, or an array of Arguments objects. The object returned by our factory method contains the method parameters of all test method invocations.
+An Arguments object must contain all method parameters of a single test method invocation.
+We can create a new Arguments object by invoking the static of() method of the Arguments interface. The method parameters provided to the of() method are passed to our test method when it is invoked by JUnit 5. That’s why the provided method parameters must use the same order as the method parameters of our test method.
+
+@DisplayName("Should calculate the correct sum")
+    @ParameterizedTest(name = "{index} => a={0}, b={1}, sum={2}")
+    @MethodSource("sumProvider")
+    void sum(int a, int b, int sum) {
+        assertEquals(sum, a + b);
+    }
+ 
+    private static Stream<Arguments> sumProvider() {
+        return Stream.of(
+                Arguments.of(1, 1, 2),
+                Arguments.of(2, 3, 5)
+        );
+    }
+
+Creating the Method Parameters by Using a Custom ArgumentsProvider
+ @DisplayName("Should calculate the correct sum")
+    @ParameterizedTest(name = "{index} => a={0}, b={1}, sum={2}")
+    @ArgumentsSource(CustomArgumentProvider.class)
+    void sum(int a, int b, int sum) {
+        assertEquals(sum, a + b);
+    }
+ 
+    static class CustomArgumentProvider implements ArgumentsProvider {
+ 
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                    Arguments.of(1, 1, 2),
+                    Arguments.of(2, 3, 5)
+            );
+        }
+    }
+
+If we want pass “complex” objects to parameterized tests which are found from the same test class and the logic that creates these method parameters is not “too complex”, we should create these method parameters by using a factory method.
+If the test methods that use our test data are found from different test classes or the logic which creates the required test data is so complex that we don’t want to add it to our test class, we have to create a custom ArgumentsProvider.
+If we want to provide our test data by using strings and use method parameters that are not supported by the default argument converters, we have to implement a custom ArgumentConverter.
+
+Writing assertions using JUnit 5 assertion API 
+
+Writing Assertions for the Execution Time of the System Under Test:
+
+assertTimeout() method, the provided Executable or ThrowingSupplier will be executed in the same thread as the code that calls it. Also, this method doesn’t abort the execution if the timeout is exceeded.
+If we use the assertTimeoutPreemptively() method, the provided Executable or ThrowingSupplier will be executed in a different thread than the code that calls it. Also, this method aborts the execution if the timeout is exceeded.
+
+
+    @Test
+    @DisplayName("Should return the correct message before timeout is exceeded")
+    void shouldReturnCorrectMessageBeforeTimeoutIsExceeded() {
+        final String message = assertTimeout(Duration.ofMillis(50), () -> {
+            Thread.sleep(20);
+            return "Hello World!";
+        });
+        assertEquals("Hello World!", message);
+    }
+
+Providing a Custom Error Message:
+
+    @Test
+    @DisplayName("Should be false")
+    void shouldBeFalse() {
+        assertFalse(false, "The boolean is not false");
+    }
+
+create a message supplier (Supplier<String>) and pass this supplier as the last method parameter of the invoked assertion method. If we use this approach, JUnit 5 creates the actual error messages only if our assertion fails. That’s why this is a good choice if we want to create a “complex” error message that has parameters.
+
+    @Test
+    @DisplayName("Should contain the correct key")
+    void shouldContainCorrectKey() {
+        assertTrue(
+                map.containsKey(KEY), 
+                () -> String.format("The map doesn't contain the key: %s", KEY)
+        );
+    }
+
+
+Grouping Assertions:
+If we have to write an assertion for a state that requires multiple assertions, we can group our assertions by using the assertAll() method of the Assertions class. This method takes the following method parameters:
+
+An optional heading that identifies the asserted state.
+An array, a Collection, or a Stream of Executable objects which invoke our assertions.
+When we invoke the assertAll() method, it invokes all assertions given as a method parameter and reports all assertion failures after all assertions have been run.
+
+
+JUnit 5 Tutorial: Writing Assertions With Hamcrest:
+'org.hamcrest:hamcrest-library:2.1'
+If you have used Hamcrest with JUnit 4, you will probably remember that you had to use the assertThat() method of the org.junit.Assert class. However, the JUnit 5 API doesn’t have a method that takes a Hamcrest matcher as a method parameter.Instead, developers are encouraged to use the built-in support for matchers provided by third-party assertion libraries.In other words, if we want to use Hamcrest matchers, we have to use the assertThat() method of the org.hamcrest.MatcherAssert class.
+
+This method takes either two or three method parameters which are described in the following:
+An optional error message that is shown when our assertion fails.
+The actual value or object.
+A Matcher object that specifies the expected value.
+    Also, before we can invoke the assertThat() method, we have to create a new Matcher object by using the static factory methods provided by the org.hamcrest.Matchers class.
+
+assertThat(true, is(true));
+assertThat(false, is(false));
+assertThat(null, nullValue());
+assertThat(new Object(), notNullValue());
+assertThat(ACTUAL, is(EXPECTED));   two lists are deeply equal
+assertThat(ACTUAL, not(EXPECTED));
+assertThat(ACTUAL, sameInstance(EXPECTED));
+assertThat(ACTUAL, not(sameInstance(EXPECTED)));
+assertThat(list, hasSize(2));
+assertThat(list, contains(first, second));
+assertThat(list, containsInAnyOrder(second, first));
+assertThat(list, hasItem(first));
+assertThat(list, not(hasItem(new Object())));
+assertThat(map, hasKey(KEY));
+assertThat(map, not(hasKey(INCORRECT_KEY)));
+assertThat(map, hasEntry(KEY, VALUE));
+@Test
+    @DisplayName("Should have the correct name")
+    void shouldHaveCorrectName() {
+        assertThat(person, allOf(
+                hasProperty("firstName", is(FIRST_NAME)),
+                hasProperty("lastName", is(LAST_NAME))
+        ));
+    }
+}
+
+assertThat(person, anyOf(
+                hasProperty("firstName", is(FIRST_NAME)),
+                hasProperty("lastName", is(LAST_NAME))
+        ));
+
+Custom error message
+assertThat(String.format(
+                            "The list doesn't contain the expected object: %s", 
+                            first
+                    ),
+                    list,
+                    hasItem(first)
+            );
+
+
+
+
+JUnit 5 Tutorial: Writing Assertions With AssertJ
+'org.assertj:assertj-core:3.9.1'
+assertions with AssertJ, we have to use the static assertThat() method of the org.assertj.core.api.Assertions class. When we invoke this method, we have to know these two things:
+
+The assertThat() method takes the actual value or object as a method parameter.
+The Assertions() class uses method overloading and the type of the object returned by the assertThat() method depends from the type of the method parameter (the actual value or object).
+After we have invoked the assertThat() method, we can write our assertions by using the returned object. Also, because AssertJ provides a fluent API, each assertion method returns a reference to the used “assertion object”. This means that we can chain assertions by simply invoking another assertion method.
+
+assertThat(true).isTrue();
+assertThat(false).isFalse();
+                .isNull();
+                .isNotNull();
+
+Asserting That Two Objects or Values Are Equal:
+The isEqualTo() method invokes the equals() method.
+The isEqualByComparingTo() method invokes the compareTo() method of the Comparable interface.
+assertThat(ACTUAL).isEqualByComparingTo(EXPECTED);
+
+Asserting Object References: 
+assertThat(ACTUAL).isSameAs(EXPECTED);
+
+Asserting That Two Arrays Are Equal
+assertThat(ACTUAL).isEqualTo(EXPECTED); - iterable deeply equal also
+
+For Iterables
+assertThat(list).hasSize(2);
+assertThat(list).containsExactly(first, second);
+assertThat(list).containsExactlyInAnyOrder(first, second);
+assertThat(list).containsOnlyOnce(first);
+assertThat(list).doesNotContain(new Object());
+assertThat(map).containsKey(KEY);
+assertThat(map).containsEntry(KEY, VALUE);
+
+ssertThatThrownBy(() -> { throw new NullPointerException(); })
+                        .isExactlyInstanceOf(NullPointerException.class);
+ssertThatThrownBy(() -> { 
+                    throw new NullPointerException("Hello World!"); 
+                })
+                        .hasMessage("Hello World!");
+
+final Throwable thrown = catchThrowable(() -> { 
+                    throw new NullPointerException(); 
+                });
+                assertThat(thrown).isExactlyInstanceOf(NullPointerException.class);
+final Throwable thrown = catchThrowable(() -> {
+                    throw new NullPointerException("Hello World!"); }
+                    );
+                assertThat(thrown.getMessage()).isEqualTo("Hello World!");
+
+Writing Assertions for Optional Objects:
+        @Test
+        @DisplayName("Should be empty")
+        void shouldBeEmpty() {
+            assertThat(Optional.empty()).isEmpty();
+        }
+
+
+Providing a Custom Error Message
+two options:
+
+If we want to override the description part of the error message, we have to invoke either the as() or the describeAs() method of the AbstractAssert class.
+If we want to override the entire error message, we have to invoke the overridingErrorMessage() method of the AbstractAssert class.
+assertThat(true)
+                .describedAs("The boolean is not false")
+                .isFalse();
+assertThat(true)
+                .overridingErrorMessage("The boolean is not false")
+                .isFalse();
+
+Writing Soft Assertions
+If we have to write an assertion for a state that requires multiple assertions, it’s a good idea to run all assertions and report all assertion failures after all assertions have been run. We can do this with AssertJ by using soft assertions.
+
+SoftAssertions softAssertions = new SoftAssertions();
+
+softAssertions.assertThat(person.getFirstName())
+        .overridingErrorMessage(
+                "Expected the first name to be: %s but it was: %s",
+                FIRST_NAME,
+                person.getFirstName()
+        )
+        .isEqualTo(FIRST_NAME);
+softAssertions.assertThat(person.getLastName())
+        .overridingErrorMessage(
+                "Expected the last name to be: %s but it was: %s",
+                LAST_NAME,
+                person.getLastName()
+        )
+        .isEqualTo(LAST_NAME);
+
+softAssertions.assertAll();
+
+
+Mockito with JUnit 5:
+JUnit 4 rules and runners don't work in JUnit 5, so the MockitoRule and the Mockito runner can not be used.
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>2.23.4</version>
+    <scope>test</scope>
+</dependency>
+
+@ExtendWith(MockitoExtension.class)
+class MyTest {
+
+    @Mock
+    private Foo foo;
+
+    @InjectMocks
+    private Bar bar; // constructor injection
+}

@@ -6,7 +6,7 @@
 
 * Document: A document is a set of key-value pairs. Documents have dynamic schema. Dynamic schema means that documents in the same collection do not need to have the same set of fields or structure, and common fields in a collection's documents may hold different types of data.
 
-* _id is the primary key in a document. User can provide value for it while insertion or MongoDB doe it. _id is a 12 bytes hexadecimal number which assures the uniqueness of every document.
+* _id is the primary key in a document. User can provide value for it while insertion or MongoDB does it. _id is a 12 bytes hexadecimal number which assures the uniqueness of every document.
     4 bytes - current timestamp
     3 bytes - machine id
     3 bytes - process id of mongo server
